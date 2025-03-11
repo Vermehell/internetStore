@@ -1,0 +1,21 @@
+/* index.css */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Убедитесь, что Dialog не скрыт */
+.MuiDialog-paper {
+  min-width: 300px;
+}
+
+/* В index.css */
+.MuiAppBar-root {
+  margin-bottom: 20px;
+}
+
+.MuiToolbar-root a {
+  text-decoration: none;
+  color: inherit;
+  margin: 0 10px;
+}
