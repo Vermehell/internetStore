@@ -3,13 +3,14 @@ from datetime import datetime
 
 
 class UserCreate(BaseModel):
-    username: str
+    login: str  # Уникальный логин
+    username: str  # Обычное имя
     email: EmailStr
     password: str
 
-
 class UserResponse(BaseModel):
     id: int
+    login: str  # Добавлено
     username: str
     email: str
     is_admin: bool

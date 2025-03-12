@@ -8,11 +8,23 @@ from schemas import UserCreate, CategoryCreate, ProductCreate, CartItemCreate
 
 
 def create_user(db: Session, user: UserCreate):
+    # Проверка уникальности логина
+    existing_user_by_login = db.query(User).filter(User.login == user.login).first()
+    if existing_user_by_login:
+        raise HTTPException(status_code=400, detail="Login already exists")
+
+    # Проверка уникальности email
+    existing_user_by_email = db.query(User).filter(User.email == user.email).first()
+    if existing_user_by_email:
+        raise HTTPException(status_code=400, detail="Email already exists")
+
+    # Создание пользователя
     hashed_password = get_password_hash(user.password)
     db_user = User(
-        username=user.username,
+        login=user.login,  # Уникальный логин
+        username=user.username,  # Обычное имя
         email=user.email,
-        hashed_password=hashed_password
+        hashed_password=hashed_password,
     )
     db.add(db_user)
     db.commit()
@@ -20,8 +32,8 @@ def create_user(db: Session, user: UserCreate):
     return db_user
 
 
-def get_user_by_username(db: Session, username: str):
-    return db.query(User).filter(User.username == username).first()
+def get_user_by_login(db: Session, login: str):
+    return db.query(User).filter(User.login == login).first()
 
 
 def create_category(db: Session, category: CategoryCreate):

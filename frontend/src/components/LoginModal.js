@@ -1,24 +1,14 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { Dialog, TextField, Button, CircularProgress, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
 import api from '../api';
-import {
-  Dialog,
-  TextField,
-  Button,
-  CircularProgress,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Snackbar,
-  Alert
-} from '@mui/material';
+import { useAuth } from '../contexts/AuthContext';
 
 const LoginModal = ({ open, onClose }) => {
-  const [username, setUsername] = useState('');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login: authLogin } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +18,7 @@ const LoginModal = ({ open, onClose }) => {
     try {
       const response = await api.post(
         '/users/login',
-        `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+        `username=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`,
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           withCredentials: true,
@@ -36,8 +26,8 @@ const LoginModal = ({ open, onClose }) => {
       );
 
       const userResponse = await api.get('/users/me', { withCredentials: true });
-      login(userResponse.data);
-      onClose(); // Закрываем модальное окно после успешного входа
+      authLogin(userResponse.data);
+      onClose();
     } catch (error) {
       setError('Неверный логин или пароль');
       console.error('Ошибка авторизации:', error.response?.data);
@@ -53,10 +43,10 @@ const LoginModal = ({ open, onClose }) => {
         <DialogContent>
           <form onSubmit={handleSubmit}>
             <TextField
-              label="Имя пользователя"
+              label="Логин"
               fullWidth
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
               margin="normal"
               required
               disabled={loading}
@@ -87,7 +77,6 @@ const LoginModal = ({ open, onClose }) => {
           </form>
         </DialogContent>
       </Dialog>
-
       <Snackbar
         open={!!error}
         autoHideDuration={4000}

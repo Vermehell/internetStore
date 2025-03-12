@@ -5,20 +5,21 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User
 import schemas
-from crud import create_user, get_user_by_username, update_user_username, update_user_password
+from crud import create_user, update_user_username, update_user_password, \
+    get_user_by_login
 from auth import get_password_hash, create_access_token, get_current_user, verify_password
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post("/register", response_model=schemas.Token)  # Возвращаем токен для автоматического входа
+@router.post("/register", response_model=schemas.Token)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    # Проверка дубликата username
-    existing_user_by_username = get_user_by_username(db, user.username)
-    if existing_user_by_username:
-        raise HTTPException(status_code=400, detail="Username already exists")
+    # Проверка уникальности логина
+    existing_user_by_login = db.query(User).filter(User.login == user.login).first()
+    if existing_user_by_login:
+        raise HTTPException(status_code=400, detail="Login already exists")
 
-    # Проверка дубликата email
+    # Проверка уникальности email
     existing_user_by_email = db.query(User).filter(User.email == user.email).first()
     if existing_user_by_email:
         raise HTTPException(status_code=400, detail="Email already exists")
@@ -27,27 +28,25 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = create_user(db, user)
 
     # Создание токена для автоматического входа
-    access_token = create_access_token({"sub": db_user.username})
-
-    # Возвращаем токен
+    access_token = create_access_token({"sub": db_user.login})  # Токен привязан к логину
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.post("/login", response_model=schemas.Token)
 async def login(
-        response: Response,
-        form_data: OAuth2PasswordRequestForm = Depends(),
-        db: Session = Depends(get_db),
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
 ):
-    user = get_user_by_username(db, form_data.username)
+    user = get_user_by_login(db, form_data.username)
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect login or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token = create_access_token({"sub": user.username})
+    access_token = create_access_token({"sub": user.login})
     response.set_cookie(
         key="access_token",
         value=f"Bearer {access_token}",
@@ -64,6 +63,10 @@ async def get_current_user_profile(
     request: Request,
     current_user: User = Depends(get_current_user),
 ):
+    # Убедитесь, что current_user не None
+    if not current_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
     return current_user
 
 

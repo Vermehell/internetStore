@@ -1,25 +1,16 @@
 import React, { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { Dialog, TextField, Button, CircularProgress, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
 import api from '../api';
-import {
-  Dialog,
-  TextField,
-  Button,
-  CircularProgress,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Snackbar,
-  Alert
-} from '@mui/material';
+import { useAuth } from '../contexts/AuthContext';
 
 const RegistrationModal = ({ open, onClose }) => {
+  const [login, setLogin] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login: authLogin } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,27 +18,26 @@ const RegistrationModal = ({ open, onClose }) => {
     setError('');
 
     try {
-      // Регистрация
-      const registerResponse = await api.post('/users/register', {
+      const response = await api.post('/users/register', {
+        login,
         username,
         email,
-        password
+        password,
       });
 
       // Автоматический вход после регистрации
       const loginResponse = await api.post(
         '/users/login',
-        `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+        `username=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`,
         {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           withCredentials: true,
         }
       );
 
-      // Получение данных пользователя
       const userResponse = await api.get('/users/me', { withCredentials: true });
-      login(userResponse.data); // Авторизуем пользователя
-      onClose(); // Закрываем модальное окно регистрации
+      authLogin(userResponse.data);
+      onClose();
     } catch (error) {
       setError(error.response?.data?.detail || 'Ошибка регистрации');
     } finally {
@@ -62,7 +52,15 @@ const RegistrationModal = ({ open, onClose }) => {
         <DialogContent>
           <form onSubmit={handleSubmit}>
             <TextField
-              label="Имя пользователя"
+              label="Логин"
+              fullWidth
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
+              margin="normal"
+              required
+            />
+            <TextField
+              label="Имя"
               fullWidth
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -98,7 +96,6 @@ const RegistrationModal = ({ open, onClose }) => {
           </form>
         </DialogContent>
       </Dialog>
-
       <Snackbar
         open={!!error}
         autoHideDuration={4000}

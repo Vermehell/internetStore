@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from starlette import status
 from fastapi import Request
 
+from models import User
 from database import SessionLocal, get_db
 
 SECRET_KEY = "30f5c2d98f13dd1014d247564fdfbafe05d2ebe4d7b84e39"
@@ -17,9 +18,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 
-def get_user_service(db: Session, username: str):
-    from crud import get_user_by_username
-    return get_user_by_username(db, username)
+def get_user_service(db: Session, login: str):  # Ищем по логину
+    return db.query(User).filter(User.login == login).first()
 
 
 def get_password_hash(password: str):
@@ -50,13 +50,13 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     try:
         token = token.replace("Bearer ", "")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-        if not username:
+        login = payload.get("sub")  # Теперь токен привязан к логину
+        if not login:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    user = get_user_service(db, username=username)
+    user = get_user_service(db, login=login)
     if not user:
         raise credentials_exception
     return user

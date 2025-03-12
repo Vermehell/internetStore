@@ -5,9 +5,9 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // Состояние для модального окна входа
-  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false); // Состояние для модального окна регистрации
-  const [isAuthRequiredModalOpen, setIsAuthRequiredModalOpen] = useState(false); // Состояние для модального окна "Требуется авторизация"
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+  const [isAuthRequiredModalOpen, setIsAuthRequiredModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -18,15 +18,12 @@ export const AuthProvider = ({ children }) => {
         console.error('Ошибка загрузки пользователя:', error);
       }
     };
+
     fetchUser();
   }, []);
 
-  const login = (userData, token) => {
+  const login = (userData) => {
     setUser(userData);
-    if (token) {
-      // Сохраняем токен в куках
-      document.cookie = `access_token=Bearer ${token}; path=/; max-age=1800; SameSite=Lax`;
-    }
   };
 
   const logout = async () => {
@@ -36,10 +33,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Ошибка выхода:', error);
     }
-  };
-
-  const updateUser = (updatedData) => {
-    setUser(prev => ({ ...prev, ...updatedData }));
   };
 
   return (
@@ -53,8 +46,7 @@ export const AuthProvider = ({ children }) => {
         isRegistrationModalOpen,
         setIsRegistrationModalOpen,
         isAuthRequiredModalOpen,
-        setIsAuthRequiredModalOpen, // Передаем состояние и функцию для управления модальным окном "Требуется авторизация"
-        updateUser,
+        setIsAuthRequiredModalOpen,
       }}
     >
       {children}
