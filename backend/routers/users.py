@@ -77,17 +77,13 @@ def update_username(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    # Проверяем, что пользователь обновляет свой профиль или является админом
     if current_user.id != user_id and not current_user.is_admin:
         raise HTTPException(status_code=403, detail="You can only update your own username or need admin rights")
-
+    
+    # Обновляем имя пользователя
     updated_user = update_user_username(db, user_id, username_data.new_username)
-
-    # Создаем новый токен с обновленным username
-    new_token = create_access_token({"sub": updated_user.username})
-    print(f"New token generated: {new_token}")  # Логируем новый токен
-
-    return {"user": updated_user, "access_token": new_token, "token_type": "bearer"}
-
+    return updated_user
 
 @router.put("/{user_id}/password", response_model=schemas.UserResponse)
 def update_password(

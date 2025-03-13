@@ -89,11 +89,8 @@ def update_user_username(db: Session, user_id: int, new_username: str):
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
-
-    existing_user = db.query(User).filter(User.username == new_username).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
-
+    
+    # Обновляем имя пользователя
     db_user.username = new_username
     db.commit()
     db.refresh(db_user)
