@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from models import Product, Category, User
-from schemas import ProductCreate, ProductResponse
+from models import Product, Category, User, ProductSpecification
+from schemas import ProductCreate, ProductResponse, ProductSpecificationResponse
 from crud import get_products, create_product, get_product_by_id
 from auth import get_current_user
 
@@ -36,3 +36,11 @@ def create_new_product(
         raise HTTPException(status_code=404, detail="Category not found")
 
     return create_product(db, product)
+
+
+@router.get("/{product_id}/specs", response_model=list[ProductSpecificationResponse])
+def get_product_specifications(product_id: int, db: Session = Depends(get_db)):
+    specs = db.query(ProductSpecification).filter(ProductSpecification.product_id == product_id).all()
+    if not specs:
+        raise HTTPException(status_code=404, detail="Характеристики не найдены")
+    return specs

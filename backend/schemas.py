@@ -104,3 +104,12 @@ class UserUpdatePassword(BaseModel):
 class UserLogin(BaseModel):
     username: str
     password: str
+
+class ProductSpecificationResponse(BaseModel):
+    id: int
+    product_id: int
+    spec_name: str
+    spec_value: str
+
+    class Config:
+        from_attributes = True  # Ранее называлось orm_mode

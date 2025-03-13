@@ -1,43 +1,55 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardMedia, CardContent, Typography, Button } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 
 const ProductCard = ({ product, onAddToCart }) => {
-  const { user, setIsAuthRequiredModalOpen } = useAuth(); // Получаем доступ к состоянию модального окна "Требуется авторизация"
+  const { user, setIsAuthRequiredModalOpen } = useAuth();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.stopPropagation(); // Предотвращаем всплытие события
     if (!user) {
-      setIsAuthRequiredModalOpen(true); // Открываем модальное окно "Требуется авторизация"
+      setIsAuthRequiredModalOpen(true);
     } else {
-      onAddToCart(); // Если пользователь авторизован, добавляем товар в корзину
+      onAddToCart();
     }
   };
 
   return (
-    <Card>
+    <Card 
+      component={Link} 
+      to={`/products/${product.id}`}
+      style={{ 
+        textDecoration: 'none', 
+        height: '100%', 
+        display: 'flex', 
+        flexDirection: 'column' 
+      }}
+    >
       <CardMedia
         component="img"
         height="200"
         image={product.image_url || '/placeholder-product.jpg'}
         alt={product.name}
       />
-      <CardContent>
-        <Typography variant="h6">{product.name}</Typography>
-        <Typography variant="body2" color="textSecondary">
+      <CardContent style={{ flexGrow: 1 }}>
+        <Typography variant="h6" gutterBottom>{product.name}</Typography>
+        <Typography variant="body2" color="textSecondary" paragraph>
           {product.description}
         </Typography>
         <Typography variant="h6" style={{ margin: '10px 0' }}>
           {product.price} ₽
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleAddToCart} // Используем новую функцию
-        >
-          В корзину
-        </Button>
       </CardContent>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={handleAddToCart}
+        style={{ marginTop: 'auto' }}
+      >
+        В корзину
+      </Button>
     </Card>
   );
 };
