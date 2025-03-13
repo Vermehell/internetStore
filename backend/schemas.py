@@ -1,12 +1,12 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from datetime import datetime
 
 
 class UserCreate(BaseModel):
-    login: str  # Уникальный логин
-    username: str  # Обычное имя
+    login: str = Field(..., min_length=3, max_length=50, description="Логин должен быть от 3 до 50 символов")
+    username: str = Field(..., min_length=3, max_length=50, description="Имя пользователя должно быть от 3 до 50 символов")
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=6, description="Пароль должен быть не менее 6 символов")
 
 class UserResponse(BaseModel):
     id: int
@@ -81,7 +81,7 @@ class OrderResponse(BaseModel):
 
 
 class UserUpdateUsername(BaseModel):
-    new_username: str
+    new_username: str = Field(..., min_length=3, max_length=50, description="Имя пользователя должно быть от 3 до 50 символов")
 
 
 class UserUpdatePassword(BaseModel):

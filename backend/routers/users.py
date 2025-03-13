@@ -69,7 +69,6 @@ async def get_current_user_profile(
     
     return current_user
 
-
 @router.put("/{user_id}/username", response_model=schemas.UserResponse)
 def update_username(
     user_id: int,
@@ -79,7 +78,10 @@ def update_username(
 ):
     # Проверяем, что пользователь обновляет свой профиль или является админом
     if current_user.id != user_id and not current_user.is_admin:
-        raise HTTPException(status_code=403, detail="You can only update your own username or need admin rights")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only update your own username or need admin rights"
+        )
     
     # Обновляем имя пользователя
     updated_user = update_user_username(db, user_id, username_data.new_username)
