@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, validator
 from datetime import datetime
 
 
@@ -7,6 +7,18 @@ class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50, description="Имя пользователя должно быть от 3 до 50 символов")
     email: EmailStr
     password: str = Field(..., min_length=6, description="Пароль должен быть не менее 6 символов")
+
+    @validator('email')
+    def validate_email(cls, value):
+        # Проверяем, что email содержит ровно один символ "@" и ровно одну точку после "@"
+        if not value.count('@') == 1:
+            raise ValueError('Email должен содержать ровно один символ "@"')
+        
+        domain_part = value.split('@')[1]  # Часть после "@"
+        if domain_part.count('.') != 1:
+            raise ValueError('Email должен содержать ровно одну точку после "@"')
+        
+        return value
 
 class UserResponse(BaseModel):
     id: int

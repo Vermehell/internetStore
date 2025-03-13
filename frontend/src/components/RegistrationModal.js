@@ -25,6 +25,17 @@ const RegistrationModal = ({ open, onClose }) => {
             setError('Пароль должен быть не менее 6 символов');
             return false;
         }
+        // Валидация email
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setError('Email должен содержать ровно один символ "@" и ровно одну точку после "@"');
+            return false;
+        }
+        // Дополнительная проверка на одну точку после "@"
+        const domainPart = email.split('@')[1];
+        if (domainPart.split('.').length - 1 !== 1) {
+            setError('Email должен содержать ровно одну точку после "@"');
+            return false;
+        }
         return true;
     };
 
@@ -98,6 +109,7 @@ const RegistrationModal = ({ open, onClose }) => {
                             onChange={(e) => setEmail(e.target.value)}
                             margin="normal"
                             required
+                            error={!!error && error.includes('Email')}
                         />
                         <TextField
                             label="Пароль"
