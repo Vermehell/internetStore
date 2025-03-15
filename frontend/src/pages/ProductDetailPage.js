@@ -12,7 +12,9 @@ const ProductDetailPage = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
+                // Запрос данных о товаре
                 const productResponse = await api.get(`/products/${productId}`);
+                // Запрос характеристик товара
                 const specsResponse = await api.get(`/products/${productId}/specs`);
                 setProduct(productResponse.data);
                 setSpecs(specsResponse.data);
