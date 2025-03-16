@@ -113,3 +113,7 @@ class ProductSpecificationResponse(BaseModel):
 
     class Config:
         from_attributes = True  # Ранее называлось orm_mode
+
+
+class CartItemUpdate(BaseModel):
+    quantity: int  # Поле quantity должно быть целым числом
