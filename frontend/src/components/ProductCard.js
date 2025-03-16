@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardMedia, Typography, Button, IconButton, Box } from '@mui/material';
+import { Card, Typography, Button, IconButton, Box } from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
@@ -19,15 +19,14 @@ const ProductCard = ({ product }) => {
     }
 
     try {
-      const cartItem = cartItems.find(item => item.product_id === product.id);
       if (cartItem) {
         if (newQuantity > cartItem.quantity) {
-          await incrementQuantity(product.id); // Увеличиваем количество
+          await incrementQuantity(product.id);
         } else if (newQuantity < cartItem.quantity) {
-          await decrementQuantity(product.id); // Уменьшаем количество
+          await decrementQuantity(product.id);
         }
       } else {
-        await addToCart(product.id, 1); // Добавляем новый товар
+        await addToCart(product.id, 1);
       }
     } catch (error) {
       console.error('Ошибка обновления корзины:', error);
@@ -41,12 +40,14 @@ const ProductCard = ({ product }) => {
       style={{ textDecoration: 'none', display: 'block', height: '100%' }}
     >
       <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <CardMedia
-          component="img"
-          height="200"
-          image={product.image_url || '/placeholder-product.jpg'}
-          alt={product.name}
-        />
+        <div className="product-card-image">
+          <img
+            src={product.image_url || '/images/products/placeholder.jpg'}
+            alt={product.name}
+            className="product-image"
+          />
+        </div>
+
         <Box p={2} style={{ flexGrow: 1 }}>
           <Typography variant="h6" gutterBottom>{product.name}</Typography>
           <Typography variant="body2" color="textSecondary" paragraph>
@@ -54,6 +55,7 @@ const ProductCard = ({ product }) => {
           </Typography>
           <Typography variant="h6">{product.price} ₽</Typography>
         </Box>
+
         {quantity > 0 ? (
           <Box display="flex" alignItems="center" justifyContent="space-between" p={1}>
             <IconButton

@@ -5,7 +5,6 @@ import {
   Typography,
   Grid,
   Card,
-  CardMedia,
   CardContent,
   CircularProgress,
   Paper,
@@ -15,7 +14,6 @@ import {
   TableContainer,
   TableRow,
   Alert,
-  Box,
 } from '@mui/material';
 import api from '../api';
 
@@ -29,24 +27,17 @@ const ProductDetailPage = () => {
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
-        console.log('Загрузка данных...');
         const productResponse = await api.get(`/products/${productId}`);
         const specsResponse = await api.get(`/products/${productId}/specs`);
-        
-        if (!productResponse.data || !specsResponse.data) {
-          throw new Error('Данные не получены');
-        }
-
         setProduct(productResponse.data);
         setSpecs(specsResponse.data);
       } catch (error) {
-        console.error('Ошибка:', error);
-        setError('Не удалось загрузить данные');
+        console.error('Ошибка загрузки данных:', error);
+        setError('Не удалось загрузить данные о товаре');
       } finally {
         setLoading(false);
       }
     };
-
     fetchProductDetails();
   }, [productId]);
 
@@ -77,20 +68,15 @@ const ProductDetailPage = () => {
   return (
     <Container maxWidth="lg" style={{ padding: 20 }}>
       <Grid container spacing={4}>
-        {/* Изображение товара */}
         <Grid item xs={12} md={6}>
-          <Card>
-            <CardMedia
-              component="img"
-              height="500"
-              image={product.image_url || '/placeholder-product.jpg'}
+          <div className="product-page-image">
+            <img
+              src={product.image_url || '/images/products/placeholder.jpg'}
               alt={product.name}
-              style={{ objectFit: 'contain' }}
+              className="product-image"
             />
-          </Card>
+          </div>
         </Grid>
-
-        {/* Информация о товаре */}
         <Grid item xs={12} md={6}>
           <CardContent>
             <Typography variant="h3" gutterBottom>{product.name}</Typography>
@@ -98,8 +84,6 @@ const ProductDetailPage = () => {
             <Typography variant="h4" color="primary" gutterBottom>
               {product.price.toLocaleString('ru-RU')} ₽
             </Typography>
-
-            {/* Характеристики */}
             <Typography variant="h5" gutterBottom>Характеристики:</Typography>
             {specs.length > 0 ? (
               <TableContainer component={Paper}>
