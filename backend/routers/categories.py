@@ -24,3 +24,10 @@ def create_new_category(
         raise HTTPException(status_code=403, detail="Only admins can add categories")
 
     return create_category(db, category)
+
+@router.get("/{category_id}", response_model=CategoryResponse)  # Добавляем новый эндпоинт
+def get_category(category_id: int, db: Session = Depends(get_db)):
+    category = db.query(Category).filter(Category.id == category_id).first()
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return category

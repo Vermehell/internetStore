@@ -5,6 +5,7 @@ from auth import get_password_hash, verify_password
 from models import User, Category, Product, Cart
 from database import SessionLocal
 from schemas import UserCreate, CategoryCreate, ProductCreate, CartItemCreate
+from typing import Optional
 
 
 def create_user(db: Session, user: UserCreate):
@@ -56,8 +57,11 @@ def create_product(db: Session, product: ProductCreate):
     return db_product
 
 
-def get_products(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Product).offset(skip).limit(limit).all()
+def get_products(db: Session, skip: int = 0, limit: int = 100, category_id: Optional[int] = None):
+    query = db.query(Product)
+    if category_id is not None:
+        query = query.filter(Product.category_id == category_id)
+    return query.offset(skip).limit(limit).all()
 
 
 def get_product_by_id(db: Session, product_id: int):

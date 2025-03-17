@@ -1,19 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { AppBar, Toolbar, Button, Typography, Container } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+  Container,
+  Menu,
+  MenuItem,
+  Box,
+} from '@mui/material';
 import LoginModal from './LoginModal';
 import RegistrationModal from './RegistrationModal';
-import AuthRequiredModal from './AuthRequiredModal'; // Новое модальное окно
+import AuthRequiredModal from './AuthRequiredModal';
+import api from '../api';
 
 const Header = () => {
-  const { user, logout, isLoginModalOpen, setIsLoginModalOpen, isRegistrationModalOpen, setIsRegistrationModalOpen, isAuthRequiredModalOpen, setIsAuthRequiredModalOpen } = useAuth();
+  const {
+    user,
+    logout,
+    isLoginModalOpen,
+    setIsLoginModalOpen,
+    isRegistrationModalOpen,
+    setIsRegistrationModalOpen,
+    isAuthRequiredModalOpen,
+    setIsAuthRequiredModalOpen,
+  } = useAuth();
   const navigate = useNavigate();
+
+  // Состояния для выпадающего меню категорий
+  const [categories, setCategories] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  // Загрузка категорий при монтировании компонента
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get('/categories');
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Ошибка загрузки категорий:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Обработчик открытия меню
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Обработчик закрытия меню
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Обработчик выбора категории
+  const handleCategoryClick = (categoryId) => {
+    navigate(`/products?category=${categoryId}`);
+    handleMenuClose();
+  };
 
   return (
     <AppBar position="static">
       <Container maxWidth="lg">
         <Toolbar>
+          {/* Логотип и название сайта */}
           <Typography
             variant="h6"
             component={Link}
@@ -23,18 +77,52 @@ const Header = () => {
             TechStore
           </Typography>
 
-          {/* Кнопка "Товары" для всех пользователей */}
-          <Button color="inherit" component={Link} to="/products">
-            Товары
-          </Button>
+          {/* Кнопка "Категории" с выпадающим меню */}
+          <Box>
+            <Button
+              color="inherit"
+              onClick={handleMenuOpen}
+              onMouseEnter={handleMenuOpen}
+            >
+              Категории
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleMenuClose}
+              MenuListProps={{ onMouseLeave: handleMenuClose }}
+              PaperProps={{
+                style: {
+                  maxHeight: 300, // Максимальная высота меню
+                  width: 200, // Ширина меню
+                  overflowY: 'auto', // Вертикальная прокрутка
+                  overflowX: 'hidden', // Убираем горизонтальную прокрутку
+                },
+              }}
+            >
+              {categories.map((category) => (
+                <MenuItem
+                  key={category.id}
+                  onClick={() => handleCategoryClick(category.id)}
+                  style={{
+                    whiteSpace: 'normal', // Разрешаем перенос текста
+                    wordWrap: 'break-word', // Перенос длинных слов
+                  }}
+                >
+                  {category.name}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
 
-          {/* Кнопка "Корзина" только для авторизованных */}
+          {/* Кнопка "Корзина" только для авторизованных пользователей */}
           {user && (
             <Button color="inherit" component={Link} to="/cart">
               Корзина
             </Button>
           )}
 
+          {/* Кнопки для авторизованных и неавторизованных пользователей */}
           {user ? (
             <>
               <Button color="inherit" onClick={() => navigate('/profile')}>
@@ -58,33 +146,29 @@ const Header = () => {
             </>
           )}
         </Toolbar>
+
+        {/* Модальные окна */}
+        <LoginModal
+          open={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+        />
+        <RegistrationModal
+          open={isRegistrationModalOpen}
+          onClose={() => setIsRegistrationModalOpen(false)}
+        />
+        <AuthRequiredModal
+          open={isAuthRequiredModalOpen}
+          onClose={() => setIsAuthRequiredModalOpen(false)}
+          onLoginClick={() => {
+            setIsAuthRequiredModalOpen(false);
+            setIsLoginModalOpen(true);
+          }}
+          onRegisterClick={() => {
+            setIsAuthRequiredModalOpen(false);
+            setIsRegistrationModalOpen(true);
+          }}
+        />
       </Container>
-
-      {/* Модальное окно входа */}
-      <LoginModal
-        open={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
-
-      {/* Модальное окно регистрации */}
-      <RegistrationModal
-        open={isRegistrationModalOpen}
-        onClose={() => setIsRegistrationModalOpen(false)}
-      />
-
-      {/* Новое модальное окно с требованием авторизации */}
-      <AuthRequiredModal
-        open={isAuthRequiredModalOpen}
-        onClose={() => setIsAuthRequiredModalOpen(false)}
-        onLoginClick={() => {
-          setIsAuthRequiredModalOpen(false); // Закрываем текущее окно
-          setIsLoginModalOpen(true); // Открываем окно входа
-        }}
-        onRegisterClick={() => {
-          setIsAuthRequiredModalOpen(false); // Закрываем текущее окно
-          setIsRegistrationModalOpen(true); // Открываем окно регистрации
-        }}
-      />
     </AppBar>
   );
 };

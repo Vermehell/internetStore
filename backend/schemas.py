@@ -118,3 +118,11 @@ class ProductSpecificationResponse(BaseModel):
 
 class CartItemUpdate(BaseModel):
     quantity: int  # Поле quantity должно быть целым числом
+
+class CategoryResponse(BaseModel):
+    id: int
+    name: str
+    image_url: str
+
+    class Config:
+        from_attributes = True
