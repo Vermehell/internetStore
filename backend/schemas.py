@@ -38,11 +38,12 @@ class Token(BaseModel):
 
 class CategoryCreate(BaseModel):
     name: str
-
+    image_url: str  # Добавляем поле
 
 class CategoryResponse(BaseModel):
     id: int
     name: str
+    image_url: str  # Добавляем поле
 
     class Config:
         from_attributes = True
