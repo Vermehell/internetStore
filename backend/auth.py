@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from jwt import PyJWTError, encode, decode  # Используем PyJWT
 from fastapi import Depends, HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -32,14 +32,14 @@ def verify_password(plain_password: str, hashed_password: str):
 
 def create_access_token(data: dict):
     expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    expire = datetime.now() + expires_delta
-    data.update({"exp": expire}) 
-    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    expire = datetime.utcnow() + expires_delta  # Используем utcnow()
+    data.update({"exp": expire})
+    return encode(data, SECRET_KEY, algorithm=ALGORITHM)  # Используем encode из PyJWT
 
 
 def get_current_user(request: Request, db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
-        status_code=401,
+        status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Not authenticated",
     )
 
@@ -49,11 +49,11 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
 
     try:
         token = token.replace("Bearer ", "")
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])  # Используем decode из PyJWT
         login = payload.get("sub")  # Теперь токен привязан к логину
         if not login:
             raise credentials_exception
-    except JWTError:
+    except PyJWTError:  # Используем PyJWTError
         raise credentials_exception
 
     user = get_user_service(db, login=login)
