@@ -15,10 +15,10 @@ const AuthRequiredModal = ({ open, onClose, onLoginClick, onRegisterClick }) => 
         Чтобы добавить товар в корзину, войдите или зарегистрируйтесь.
       </DialogContent>
       <DialogActions>
-        <Button onClick={onLoginClick} color="primary"> {/* Исправлено: onClick */}
+        <Button onClick={onLoginClick} color="primary">
           Войти
         </Button>
-        <Button onClick={onRegisterClick} color="primary" variant="contained"> {/* Исправлено: onClick */}
+        <Button onClick={onRegisterClick} color="primary" variant="contained">
           Зарегистрироваться
         </Button>
       </DialogActions>
