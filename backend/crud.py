@@ -9,21 +9,18 @@ from typing import Optional
 
 
 def create_user(db: Session, user: UserCreate):
-    # Проверка уникальности логина
     existing_user_by_login = db.query(User).filter(User.login == user.login).first()
     if existing_user_by_login:
         raise HTTPException(status_code=400, detail="Login already exists")
 
-    # Проверка уникальности email
     existing_user_by_email = db.query(User).filter(User.email == user.email).first()
     if existing_user_by_email:
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    # Создание пользователя
     hashed_password = get_password_hash(user.password)
     db_user = User(
-        login=user.login,  # Уникальный логин
-        username=user.username,  # Обычное имя
+        login=user.login,
+        username=user.username,
         email=user.email,
         hashed_password=hashed_password,
     )

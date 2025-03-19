@@ -29,12 +29,10 @@ const Header = () => {
   } = useAuth();
   const navigate = useNavigate();
 
-  // Состояния для выпадающего меню категорий
   const [categories, setCategories] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  // Загрузка категорий при монтировании компонента
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -47,17 +45,15 @@ const Header = () => {
     fetchCategories();
   }, []);
 
-  // Обработчик открытия меню
+
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Обработчик закрытия меню
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
-  // Обработчик выбора категории
   const handleCategoryClick = (categoryId) => {
     navigate(`/products?category=${categoryId}`);
     handleMenuClose();
@@ -67,7 +63,6 @@ const Header = () => {
     <AppBar position="static">
       <Container maxWidth="lg">
         <Toolbar>
-          {/* Логотип и название сайта */}
           <Typography
             variant="h6"
             component={Link}
@@ -77,7 +72,6 @@ const Header = () => {
             TechStore
           </Typography>
 
-          {/* Кнопка "Категории" с выпадающим меню */}
           <Box>
             <Button
               color="inherit"
@@ -93,10 +87,10 @@ const Header = () => {
               MenuListProps={{ onMouseLeave: handleMenuClose }}
               PaperProps={{
                 style: {
-                  maxHeight: 300, // Максимальная высота меню
-                  width: 200, // Ширина меню
-                  overflowY: 'auto', // Вертикальная прокрутка
-                  overflowX: 'hidden', // Убираем горизонтальную прокрутку
+                  maxHeight: 300,
+                  width: 200, 
+                  overflowY: 'auto', 
+                  overflowX: 'hidden', 
                 },
               }}
             >
@@ -105,8 +99,8 @@ const Header = () => {
                   key={category.id}
                   onClick={() => handleCategoryClick(category.id)}
                   style={{
-                    whiteSpace: 'normal', // Разрешаем перенос текста
-                    wordWrap: 'break-word', // Перенос длинных слов
+                    whiteSpace: 'normal',
+                    wordWrap: 'break-word',
                   }}
                 >
                   {category.name}
@@ -115,14 +109,12 @@ const Header = () => {
             </Menu>
           </Box>
 
-          {/* Кнопка "Корзина" только для авторизованных пользователей */}
           {user && (
             <Button color="inherit" component={Link} to="/cart">
               Корзина
             </Button>
           )}
 
-          {/* Кнопки для авторизованных и неавторизованных пользователей */}
           {user ? (
             <>
               <Button color="inherit" onClick={() => navigate('/profile')}>
@@ -147,7 +139,6 @@ const Header = () => {
           )}
         </Toolbar>
 
-        {/* Модальные окна */}
         <LoginModal
           open={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}

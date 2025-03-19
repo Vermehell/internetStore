@@ -25,7 +25,7 @@ def create_new_category(
 
     return create_category(db, category)
 
-@router.get("/{category_id}", response_model=CategoryResponse)  # Добавляем новый эндпоинт
+@router.get("/{category_id}", response_model=CategoryResponse)
 def get_category(category_id: int, db: Session = Depends(get_db)):
     category = db.query(Category).filter(Category.id == category_id).first()
     if not category:

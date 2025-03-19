@@ -10,11 +10,10 @@ class UserCreate(BaseModel):
 
     @validator('email')
     def validate_email(cls, value):
-        # Проверяем, что email содержит ровно один символ "@" и ровно одну точку после "@"
         if not value.count('@') == 1:
             raise ValueError('Email должен содержать ровно один символ "@"')
         
-        domain_part = value.split('@')[1]  # Часть после "@"
+        domain_part = value.split('@')[1]
         if domain_part.count('.') != 1:
             raise ValueError('Email должен содержать ровно одну точку после "@"')
         
@@ -22,7 +21,7 @@ class UserCreate(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
-    login: str  # Добавлено
+    login: str
     username: str
     email: str
     is_admin: bool
@@ -38,12 +37,12 @@ class Token(BaseModel):
 
 class CategoryCreate(BaseModel):
     name: str
-    image_url: str  # Добавляем поле
+    image_url: str
 
 class CategoryResponse(BaseModel):
     id: int
     name: str
-    image_url: str  # Добавляем поле
+    image_url: str
 
     class Config:
         from_attributes = True
@@ -113,11 +112,11 @@ class ProductSpecificationResponse(BaseModel):
     spec_value: str
 
     class Config:
-        from_attributes = True  # Ранее называлось orm_mode
+        from_attributes = True
 
 
 class CartItemUpdate(BaseModel):
-    quantity: int  # Поле quantity должно быть целым числом
+    quantity: int 
 
 class CategoryResponse(BaseModel):
     id: int

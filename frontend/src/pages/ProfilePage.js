@@ -7,8 +7,8 @@ import api from '../api';
 const ProfilePage = () => {
     const { user, logout, login } = useAuth();
     const navigate = useNavigate();
-    const [newUsername, setNewUsername] = useState(user?.username || ''); // Изначально имя пользователя
-    const [isEditing, setIsEditing] = useState(false); // Состояние для режима редактирования
+    const [newUsername, setNewUsername] = useState(user?.username || '');
+    const [isEditing, setIsEditing] = useState(false); 
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [error, setError] = useState('');
@@ -19,7 +19,6 @@ const ProfilePage = () => {
     };
 
     const handleUpdateUsername = async () => {
-        // Валидация имени на фронтенде
         if (newUsername.length < 3 || newUsername.length > 50) {
             setError('Имя должно быть от 3 до 50 символов');
             return;
@@ -30,13 +29,12 @@ const ProfilePage = () => {
                 new_username: newUsername,
             });
 
-            // Обновляем данные пользователя в контексте
-            login(response.data); // Обновляем контекст с новыми данными
+            login(response.data);
 
             setSnackbarMessage('Имя успешно обновлено');
             setSnackbarOpen(true);
-            setError(''); // Очищаем ошибку
-            setIsEditing(false); // Выходим из режима редактирования
+            setError('');
+            setIsEditing(false);
         } catch (error) {
             setSnackbarMessage('Ошибка при обновлении имени');
             setSnackbarOpen(true);
@@ -58,7 +56,6 @@ const ProfilePage = () => {
                         Статус: {user.is_admin ? 'Администратор' : 'Пользователь'}
                     </Typography>
 
-                    {/* Поле редактирования имени */}
                     {isEditing && (
                         <Box marginBottom={2}>
                             <TextField
@@ -73,7 +70,6 @@ const ProfilePage = () => {
                         </Box>
                     )}
 
-                    {/* Кнопки управления */}
                     <Box display="flex" gap={2} marginTop={2}>
                         {isEditing ? (
                             <>
@@ -114,7 +110,6 @@ const ProfilePage = () => {
                 <Typography variant="h6">Пожалуйста, войдите в систему</Typography>
             )}
 
-            {/* Уведомление об успешном обновлении */}
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={4000}

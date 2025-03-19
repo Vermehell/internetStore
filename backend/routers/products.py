@@ -5,8 +5,8 @@ from models import Product, Category, User, ProductSpecification
 from schemas import ProductCreate, ProductResponse, ProductSpecificationResponse
 from crud import get_products, create_product, get_product_by_id
 from auth import get_current_user
-from typing import Optional  # Добавляем импорт
-from fastapi import Query  # Добавляем импорт
+from typing import Optional
+from fastapi import Query
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -14,10 +14,9 @@ router = APIRouter(prefix="/products", tags=["products"])
 def read_products(
     skip: int = 0,
     limit: int = 10,
-    category_id: Optional[int] = Query(None),  # Новый параметр
+    category_id: Optional[int] = Query(None),
     db: Session = Depends(get_db)
 ):
-    # Модифицируем вызов crud.get_products
     return get_products(db, skip=skip, limit=limit, category_id=category_id)
 
 @router.get("/{product_id}", response_model=ProductResponse)

@@ -6,8 +6,8 @@ from database import Base
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    login = Column(String(50), unique=True, index=True)  # Уникальный логин
-    username = Column(String(50), index=True)  # Обычное имя, может повторяться
+    login = Column(String(50), unique=True, index=True) 
+    username = Column(String(50), index=True)
     email = Column(String(100), unique=True, index=True)
     hashed_password = Column(String(255))
     is_admin = Column(Boolean, default=False)
@@ -17,7 +17,7 @@ class Category(Base):
     __tablename__ = "categories"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), unique=True)
-    image_url = Column(String)  # Добавляем новое поле
+    image_url = Column(String)
 
 
 class Product(Base):

@@ -14,21 +14,17 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.post("/register", response_model=schemas.Token)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    # Проверка уникальности логина
     existing_user_by_login = db.query(User).filter(User.login == user.login).first()
     if existing_user_by_login:
         raise HTTPException(status_code=400, detail="Login already exists")
 
-    # Проверка уникальности email
     existing_user_by_email = db.query(User).filter(User.email == user.email).first()
     if existing_user_by_email:
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    # Создание пользователя
     db_user = create_user(db, user)
 
-    # Создание токена для автоматического входа
-    access_token = create_access_token({"sub": db_user.login})  # Токен привязан к логину
+    access_token = create_access_token({"sub": db_user.login}) 
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -63,7 +59,6 @@ async def get_current_user_profile(
     request: Request,
     current_user: User = Depends(get_current_user),
 ):
-    # Убедитесь, что current_user не None
     if not current_user:
         raise HTTPException(status_code=404, detail="User not found")
     
@@ -76,14 +71,12 @@ def update_username(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # Проверяем, что пользователь обновляет свой профиль или является админом
     if current_user.id != user_id and not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can only update your own username or need admin rights"
         )
     
-    # Обновляем имя пользователя
     updated_user = update_user_username(db, user_id, username_data.new_username)
     return updated_user
 

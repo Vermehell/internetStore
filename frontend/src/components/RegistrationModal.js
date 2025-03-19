@@ -25,12 +25,10 @@ const RegistrationModal = ({ open, onClose }) => {
             setError('Пароль должен быть не менее 6 символов');
             return false;
         }
-        // Валидация email
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
             setError('Email должен содержать ровно один символ "@" и ровно одну точку после "@"');
             return false;
         }
-        // Дополнительная проверка на одну точку после "@"
         const domainPart = email.split('@')[1];
         if (domainPart.split('.').length - 1 !== 1) {
             setError('Email должен содержать ровно одну точку после "@"');
@@ -44,7 +42,7 @@ const RegistrationModal = ({ open, onClose }) => {
         setError('');
 
         if (!validateFields()) {
-            return; // Остановить отправку, если есть ошибки
+            return;
         }
 
         setLoading(true);
@@ -56,7 +54,6 @@ const RegistrationModal = ({ open, onClose }) => {
                 password,
             });
 
-            // Автоматический вход после регистрации
             const loginResponse = await api.post(
                 '/users/login',
                 `username=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`,

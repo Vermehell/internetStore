@@ -63,7 +63,6 @@ const HomePage = () => {
 
   return (
     <Container maxWidth="lg">
-      {/* Герой-секция */}
       <Box
         sx={{
           textAlign: 'center',
@@ -111,7 +110,6 @@ const HomePage = () => {
         </Button>
       </Box>
 
-      {/* Популярные товары */}
       <Typography
         variant="h4"
         component="h2"
@@ -131,7 +129,6 @@ const HomePage = () => {
         ))}
       </Grid>
 
-      {/* Категории с исправленным отображением изображений */}
       <Typography
         variant="h4"
         component="h2"
@@ -148,7 +145,7 @@ const HomePage = () => {
           <Grid item xs={12} md={4} key={category.id}>
             <Card
               component={Link}
-              to={`/products?category=${category.id}`} // Исправленный URL
+              to={`/products?category=${category.id}`}
               sx={{
                 height: '100%',
                 display: 'flex',
@@ -165,7 +162,7 @@ const HomePage = () => {
               <Box
                 sx={{
                   position: 'relative',
-                  paddingTop: '56.25%', // 16:9 aspect ratio
+                  paddingTop: '56.25%',
                   height: 0
                 }}
               >
@@ -197,7 +194,6 @@ const HomePage = () => {
         ))}
       </Grid>
 
-      {/* Преимущества */}
       <Paper
         elevation={0}
         sx={{

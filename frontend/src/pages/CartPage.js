@@ -25,7 +25,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 const CartPage = () => {
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
-    const { cartItems, incrementQuantity, decrementQuantity, loadCart } = useCart(); // Добавьте loadCart
+    const { cartItems, incrementQuantity, decrementQuantity, loadCart } = useCart();
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
@@ -38,7 +38,7 @@ const CartPage = () => {
     const removeItem = async (itemId) => {
       try {
           await api.delete(`/cart/${itemId}`);
-          await loadCart(); // Перезагружаем корзину после удаления
+          await loadCart();
           setSnackbarMessage('Товар удалён из корзины');
           setSnackbarOpen(true);
       } catch (error) {
