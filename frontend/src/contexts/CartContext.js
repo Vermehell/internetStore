@@ -8,12 +8,10 @@ export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
     const { user } = useAuth();
 
-    // Загрузка корзины при монтировании или изменении пользователя
     useEffect(() => {
         if (user) loadCart();
     }, [user]);
 
-    // Загрузка корзины
     const loadCart = async () => {
         try {
             const response = await api.get('/cart/');
@@ -29,7 +27,6 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    // Добавление товара в корзину
     const addToCart = async (productId, quantity) => {
         try {
           const cartItem = cartItems.find(item => item.product_id === productId);
@@ -55,11 +52,10 @@ export const CartProvider = ({ children }) => {
           }
         } catch (error) {
           console.error('Ошибка добавления товара:', error.response?.data);
-          throw error; // Пробрасываем ошибку для обработки в компоненте
+          throw error;
         }
       };
 
-    // Уменьшение количества товара
     const incrementQuantity = async (productId) => {
         try {
           const cartItem = cartItems.find(item => item.product_id === productId);
@@ -105,7 +101,6 @@ export const CartProvider = ({ children }) => {
         }
       };
 
-    // Удаление товара из корзины
     const removeFromCart = async (cartItemId) => {
         try {
             await api.delete(`/cart/${cartItemId}`);

@@ -49,7 +49,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
 
     try:
         token = token.replace("Bearer ", "")
-        payload = decode.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         login = payload.get("sub")
         if not login:
             raise credentials_exception

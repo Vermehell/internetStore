@@ -19,7 +19,6 @@ import api from '../api';
 const Header = () => {
   const {
     user,
-    logout,
     isLoginModalOpen,
     setIsLoginModalOpen,
     isRegistrationModalOpen,
