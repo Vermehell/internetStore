@@ -15,6 +15,7 @@ import LoginModal from './LoginModal';
 import RegistrationModal from './RegistrationModal';
 import AuthRequiredModal from './AuthRequiredModal';
 import api from '../api';
+import AdminMenu from './AdminMenu';
 
 const Header = () => {
   const {
@@ -116,9 +117,15 @@ const Header = () => {
 
           {user ? (
             <>
+              <Button color="inherit" component={Link} to="/orders">
+                Заказы
+              </Button>
               <Button color="inherit" onClick={() => navigate('/profile')}>
                 Профиль
               </Button>
+              {user && user.is_admin && (
+                <AdminMenu />
+              )}
             </>
           ) : (
             <>

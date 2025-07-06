@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
   const [isAuthRequiredModalOpen, setIsAuthRequiredModalOpen] = useState(false);
@@ -16,6 +17,8 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data);
       } catch (error) {
         console.error('Ошибка загрузки пользователя:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -39,6 +42,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        loading,
         login,
         logout,
         isLoginModalOpen,

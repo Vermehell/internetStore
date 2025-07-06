@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import get_db
-from models import Category, User
-from schemas import CategoryCreate, CategoryResponse
-from crud import create_category, get_categories
-from auth import get_current_user
+from ..database import get_db
+from backend.models import Category, User
+from backend.schemas import CategoryCreate, CategoryResponse, CategoryUpdate
+from backend.crud import create_category, get_categories, update_category, delete_category
+from backend.auth import get_current_user
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -31,3 +31,24 @@ def get_category(category_id: int, db: Session = Depends(get_db)):
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     return category
+
+@router.put("/{category_id}", response_model=CategoryResponse)
+def update_category_endpoint(
+    category_id: int,
+    category: CategoryUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Only admins can update categories")
+    return update_category(db, category_id, category.dict())
+
+@router.delete("/{category_id}")
+def delete_category_endpoint(
+    category_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="Only admins can delete categories")
+    return delete_category(db, category_id)

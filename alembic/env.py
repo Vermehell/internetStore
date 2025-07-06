@@ -1,5 +1,5 @@
 from logging.config import fileConfig
-from backend.models import Base  # Импортируйте ваши модели
+from backend.models import Base, User, Category, Product, ProductSpecification, Cart, Order, OrderItem  # Импорт всех моделей
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 

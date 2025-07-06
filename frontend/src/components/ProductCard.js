@@ -37,25 +37,58 @@ const ProductCard = ({ product }) => {
     <Box
       component={Link}
       to={`/products/${product.id}`}
-      style={{ textDecoration: 'none', display: 'block', height: '100%' }}
+      sx={{ textDecoration: 'none', display: 'block', height: '100%' }}
     >
-      <Card style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <div className="product-card-image">
+      <Card sx={{ height: '100%', minHeight: 420, maxHeight: 420, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Box sx={{
+          width: '100%',
+          height: 160,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          background: '#ececec',
+          borderRadius: 2,
+          boxShadow: 1,
+          mb: 1,
+          p: 1
+        }}>
           <img
             src={product.image_url || '/images/products/placeholder.jpg'}
             alt={product.name}
-            className="product-image"
+            style={{
+              maxWidth: '90%',
+              maxHeight: '90%',
+              minWidth: 80,
+              minHeight: 80,
+              objectFit: 'contain',
+              borderRadius: 8,
+              display: 'block',
+              margin: '0 auto'
+            }}
           />
-        </div>
-
-        <Box p={2} style={{ flexGrow: 1 }}>
+        </Box>
+        <Box p={2} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
           <Typography variant="h6" gutterBottom>{product.name}</Typography>
-          <Typography variant="body2" color="textSecondary" paragraph>
-            {product.description}
-          </Typography>
+          <Box sx={{ position: 'relative' }}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              paragraph
+              sx={{
+                fontSize: '1rem',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 5,
+                WebkitBoxOrient: 'vertical',
+              }}
+            >
+              {product.description}
+            </Typography>
+          </Box>
           <Typography variant="h6">{product.price} ₽</Typography>
         </Box>
-
         {quantity > 0 ? (
           <Box display="flex" alignItems="center" justifyContent="space-between" p={1}>
             <IconButton
@@ -80,7 +113,7 @@ const ProductCard = ({ product }) => {
             color="primary"
             fullWidth
             onClick={(e) => { e.preventDefault(); handleUpdateCart(1); }}
-            style={{ marginTop: 'auto' }}
+            sx={{ mt: 'auto' }}
           >
             В корзину
           </Button>

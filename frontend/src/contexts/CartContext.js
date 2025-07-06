@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api';
 import { useAuth } from './AuthContext';
+import { createOrder } from '../api';
 
 const CartContext = createContext();
 
@@ -112,8 +113,35 @@ export const CartProvider = ({ children }) => {
         }
     };
 
+    const createOrderFromCart = async (orderDetails) => {
+        if (cartItems.length === 0) throw new Error('Корзина пуста');
+        
+        const orderData = {
+            items: cartItems.map(item => ({
+                product_id: item.product_id,
+                quantity: item.quantity,
+                price: item.product.price
+            })),
+            delivery_address: orderDetails.delivery_address,
+            delivery_phone: orderDetails.delivery_phone,
+            delivery_method: orderDetails.delivery_method || 'courier',
+            payment_method: orderDetails.payment_method || 'cash',
+            notes: orderDetails.notes || ''
+        };
+        
+        const response = await createOrder(orderData);
+        
+        // Очищаем корзину после успешного создания заказа
+        for (const item of cartItems) {
+            await api.delete(`/cart/${item.id}`);
+        }
+        setCartItems([]);
+        
+        return response.data;
+    };
+
     return (
-        <CartContext.Provider value={{ cartItems, loadCart, addToCart, decrementQuantity, incrementQuantity, removeFromCart }}>
+        <CartContext.Provider value={{ cartItems, loadCart, addToCart, decrementQuantity, incrementQuantity, removeFromCart, createOrderFromCart }}>
             {children}
         </CartContext.Provider>
     );

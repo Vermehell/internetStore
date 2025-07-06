@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, validator
 from datetime import datetime
+from typing import Optional, List
 
 
 class UserCreate(BaseModel):
@@ -85,11 +86,84 @@ class CartItemResponse(BaseModel):
         from_attributes = True
 
 
+class OrderItemCreate(BaseModel):
+    product_id: int
+    quantity: int
+    price: float
+
+
+class OrderItemResponse(BaseModel):
+    id: int
+    order_id: int
+    product_id: int
+    quantity: int
+    price: float
+    product: Optional[ProductResponse] = None
+
+    class Config:
+        from_attributes = True
+
+
+class OrderCreate(BaseModel):
+    items: list[OrderItemCreate]
+    delivery_address: str = Field(..., description="Адрес доставки")
+    delivery_phone: str = Field(..., description="Телефон для доставки")
+    delivery_method: str = Field(default="courier", description="Способ доставки: courier, pickup, post")
+    payment_method: str = Field(default="cash", description="Способ оплаты: cash, card, online")
+    notes: Optional[str] = Field(None, description="Дополнительные заметки")
+
+
+class OrderUpdate(BaseModel):
+    status: Optional[str] = None
+    delivery_address: Optional[str] = None
+    delivery_phone: Optional[str] = None
+    delivery_method: Optional[str] = None
+    payment_method: Optional[str] = None
+    notes: Optional[str] = None
+
+
 class OrderResponse(BaseModel):
     id: int
+    order_number: str
+    total_price: float
+    status: str
+    delivery_address: str
+    delivery_phone: str
+    delivery_method: str
+    payment_method: str
+    notes: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    items: List[OrderItemResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
+class OrderListResponse(BaseModel):
+    id: int
+    order_number: str
     total_price: float
     status: str
     created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class OrderStatistics(BaseModel):
+    total_orders: int
+    pending_orders: int
+    confirmed_orders: int
+    processing_orders: int
+    shipped_orders: int
+    delivered_orders: int
+    cancelled_orders: int
+    total_revenue: float
+
+    class Config:
+        from_attributes = True
 
 
 class UserUpdateUsername(BaseModel):
@@ -110,6 +184,7 @@ class ProductSpecificationResponse(BaseModel):
     product_id: int
     spec_name: str
     spec_value: str
+    order: int
 
     class Config:
         from_attributes = True
@@ -123,5 +198,49 @@ class CategoryResponse(BaseModel):
     name: str
     image_url: str
 
+    class Config:
+        from_attributes = True
+
+class ProductSpecificationCreate(BaseModel):
+    spec_name: str
+    spec_value: str
+    order: int = 0
+
+class ProductSpecificationUpdate(BaseModel):
+    id: int | None = None
+    spec_name: str
+    spec_value: str
+    order: int = 0
+
+class ProductCreateWithSpecs(ProductCreate):
+    specs: list[ProductSpecificationCreate] = []
+
+class ProductUpdateWithSpecs(BaseModel):
+    name: str
+    description: str
+    price: float
+    category_id: int
+    stock: int
+    image_url: str
+    specs: list[ProductSpecificationUpdate] = []
+
+class CategoryUpdate(BaseModel):
+    name: str
+    image_url: str
+
+class UserRoleUpdate(BaseModel):
+    is_admin: bool
+
+class RefreshTokenCreate(BaseModel):
+    user_id: int
+    token: str
+    expires_at: datetime
+
+class RefreshTokenResponse(BaseModel):
+    id: int
+    user_id: int
+    token: str
+    expires_at: datetime
+    created_at: datetime
     class Config:
         from_attributes = True
